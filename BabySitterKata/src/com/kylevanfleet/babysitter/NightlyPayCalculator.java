@@ -1,9 +1,11 @@
 package com.kylevanfleet.babysitter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 
 public class NightlyPayCalculator {
 	
@@ -11,7 +13,7 @@ public class NightlyPayCalculator {
 	private double bedToMidnightRate = 8.00;
 	private double postMidnightRate = 16.00;
 	
-	private final LocalTime MIDNIGHT = LocalTime.parse("12:00AM", DateTimeFormatter.ofPattern("hh:mma"));
+	private final static LocalTime MIDNIGHT_TIME = LocalTime.parse("12:00AM", DateTimeFormatter.ofPattern("hh:mma"));
 	
 	/**
 	 * Default constructor for the NightlyPayCalculator.
@@ -21,9 +23,9 @@ public class NightlyPayCalculator {
 	}
 
 	/**
-	 * @param prebedRate
-	 * @param bedToMidnightRate
-	 * @param postMidnightRate
+	 * @param prebedRate The hourly rate charged before bedtime.
+	 * @param bedToMidnightRate The hourly rate charged after bedtime but before midnight.
+	 * @param postMidnightRate The hourly rate charged after midnight.
 	 */
 	public NightlyPayCalculator(double prebedRate, double bedToMidnightRate, double postMidnightRate) {
 		super();
@@ -32,21 +34,58 @@ public class NightlyPayCalculator {
 		this.postMidnightRate = postMidnightRate;
 	}
 	
+	
+	/**
+	 * Calculated the grand total charge based on the times provided.
+	 * 
+	 * @param start The time and date of when the babysitting session started.
+	 * @param bedTime The time that the child goes to bed.
+	 * @param end The time the babysitting session ends.
+	 * @requires start is before end and start is at or after 5:00pm and end is at or before 4:00am.
+	 * 
+	 * @return The dollar amount the the babysitter is due at the end of the session based on the
+	 *  the stored hourly rates.
+	 */
 	public double calculateGrandTotalDue(LocalDateTime start, LocalDateTime bedTime, LocalDateTime end) {
-		double preBedTotal = 0f;
-		double bedToMidnightTotal = 0f;
-		double postMidnightTotal = 0f;
-		LocalDateTime midnightDateTime = LocalDateTime.of(start.toLocalDate().plusDays(1), MIDNIGHT);
+		LocalDateTime midnight = getMidnightDateTime(start);
+		LocalDateTime[] times = {start, bedTime, midnight, end};
+		Arrays.sort(times);
+		int i = 0;
+		LocalDateTime currentTime = start, nextTime = times[i];
+		double currentRate = preBedRate;
+		double total = 0f;
 		
-		preBedTotal = calculateSubTotalDue(start, bedTime, preBedRate);
-		bedToMidnightTotal = calculateSubTotalDue(bedTime, midnightDateTime, bedToMidnightRate);
-		postMidnightTotal = calculateSubTotalDue(midnightDateTime, end, postMidnightRate);
+		while(currentTime.isBefore(end) && i < 4) {
+			nextTime = times[++i];
+			if(currentTime.isAfter(bedTime) || currentTime.isEqual(bedTime)) currentRate = bedToMidnightRate;
+			if(currentTime.isAfter(midnight) || currentTime.isEqual(midnight)) currentRate = postMidnightRate;
+			
+			total += calculateSubTotalDue(currentTime, nextTime, currentRate);
+			if(currentTime.isBefore(nextTime)) currentTime = nextTime;
+		}
 		
-		return preBedTotal + bedToMidnightTotal + postMidnightTotal;
+		
+		return total;
+	}
+
+	/**
+	 * Provides the correct midnight date and time based on the context provided by the start time.
+	 * 
+	 * @param start The start time of the babysitting session.
+	 * @return The localDateTime of midnight for the babysitting session.
+	 */
+	private LocalDateTime getMidnightDateTime(LocalDateTime start) {
+		LocalDate midnightDate = start.toLocalDate();
+		if(start.getHour() > 12) midnightDate = midnightDate.plusDays(1);
+		
+		return LocalDateTime.of(midnightDate, MIDNIGHT_TIME);
 	}
 	
 	protected double calculateSubTotalDue(LocalDateTime start, LocalDateTime end, double rate) {
 		long hours = start.until(end, ChronoUnit.HOURS);
+		
+		if(hours < 0) hours = 0;
+		
 		return rate * hours;
 	}
 	

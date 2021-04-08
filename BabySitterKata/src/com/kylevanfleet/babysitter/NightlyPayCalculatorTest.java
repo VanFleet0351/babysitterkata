@@ -123,7 +123,7 @@ class NightlyPayCalculatorTest {
 		LocalTime endTime = LocalTime.parse("04:00AM", DATE_FORMAT);
 		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
 		
-		assertEquals(8.00 * 2 + 16.00 * 4, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+		assertEquals(8.00 * 3 + 16.00 * 4, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
 	}
 	
 	@Test
