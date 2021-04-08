@@ -31,4 +31,5 @@ The babysitter may calculate his/her nightly charge by calling the calculateGran
 NightlyPayCalculator. The babysitter has to the ability to set their hourly rate during construction of the
 NightlyPayCalculator or individually via mutator methods. Since the babysitter gets paid for full hours only
 he/she has the ability to change how the minutes are rounded via the setRounding method. NightlyPayCalculator
-supports all forms of rounding from java.math.RoundingMode except the UNNECESSARY RoundingMode.
+supports all forms of rounding from java.math.RoundingMode except the UNNECESSARY RoundingMode. The default 
+rounding is set to DOWN.
