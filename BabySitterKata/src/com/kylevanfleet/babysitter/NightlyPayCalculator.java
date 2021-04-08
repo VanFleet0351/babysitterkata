@@ -9,6 +9,16 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
+
+/**
+ * The babysitter may calculate his/her nightly charge by calling the calculateGrandTotalDue method from the 
+ * NightlyPayCalculator. The babysitter has to the ability to set their hourly rate during construction of the
+ * NightlyPayCalculator or individually via mutator methods. Since the babysitter gets paid for full hours only
+ * he/she has the ability to change how the minutes are rounded via the setRounding method. NightlyPayCalculator
+ * supports all forms of rounding from java.math.RoundingMode except the UNNECESSARY RoundingMode.
+ * 
+ * @author Kyle Van Fleet
+ */
 public class NightlyPayCalculator {
 	
 	//Hourly babysitting rates
@@ -73,7 +83,6 @@ public class NightlyPayCalculator {
 			if(currentTime.isBefore(nextTime)) currentTime = nextTime;
 		}
 		
-		
 		return total;
 	}
 
@@ -85,6 +94,7 @@ public class NightlyPayCalculator {
 	 */
 	private LocalDateTime getMidnightDateTime(LocalDateTime start) {
 		LocalDate midnightDate = start.toLocalDate();
+		//if start is a pm value midnight will be on the next day
 		if(start.getHour() > 12) midnightDate = midnightDate.plusDays(1);
 		
 		return LocalDateTime.of(midnightDate, MIDNIGHT_TIME);
@@ -100,9 +110,11 @@ public class NightlyPayCalculator {
 	 */
 	protected double calculateSubTotalDue(LocalDateTime start, LocalDateTime end, double rate) {
 		long hours = start.until(end, ChronoUnit.HOURS);
+		
 		LocalDateTime tempStart = start.plusHours(hours);
 		long minutes = tempStart.until(end, ChronoUnit.MINUTES);
 		BigDecimal fractionalHours = new BigDecimal(hours + (minutes/ 60.0));
+		
 		hours = fractionalHours.setScale(0, rounding).longValue(); 
 		
 		if(hours < 0) hours = 0;
@@ -161,9 +173,15 @@ public class NightlyPayCalculator {
 	}
 
 	/**
-	 * @param rounding the rounding to set
+	 * Sets the type of rounding used for fractional hours. UNNECESSARY roundingMode is not
+	 * supported.
+	 * 
+	 * @param rounding A java.math.RoundingMode that determines how minutes are rounded to hours.
+	 * @throws IllegalArgumentException Thrown when UNNECESSARY is passed as the argument.
+	 * @requires rounding not equal to RoundingMode.UNNECESSARY
 	 */
-	public void setRounding(RoundingMode rounding) {
+	public void setRounding(RoundingMode rounding) throws IllegalArgumentException {
+		if(rounding.equals(RoundingMode.UNNECESSARY)) throw new IllegalArgumentException("UNNECESSARY RoundingMode is not supported");
 		this.rounding = rounding;
 	}
 }

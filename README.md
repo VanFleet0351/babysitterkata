@@ -23,3 +23,12 @@ Feature:
 As a babysitter
 In order to get paid for 1 night of work
 I want to calculate my nightly charge
+
+
+Solution:
+---------
+The babysitter may calculate his/her nightly charge by calling the calculateGrandTotalDue method from the 
+NightlyPayCalculator. The babysitter has to the ability to set their hourly rate during construction of the
+NightlyPayCalculator or individually via mutator methods. Since the babysitter gets paid for full hours only
+he/she has the ability to change how the minutes are rounded via the setRounding method. NightlyPayCalculator
+supports all forms of rounding from java.math.RoundingMode except the UNNECESSARY RoundingMode.

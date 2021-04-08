@@ -1,5 +1,6 @@
 package com.kylevanfleet.babysitter;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -213,5 +214,38 @@ class NightlyPayCalculatorTest {
 		calc.setRounding(java.math.RoundingMode.HALF_EVEN);
 		
 		assertEquals(140.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
+	
+	@Test
+	void testFractionalHoursRoundedCeiling() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.CEILING);
+		
+		assertEquals(152.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
+	
+	@Test
+	void testFractionalHoursRoundedFloor() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.FLOOR);
+		
+		assertEquals(116.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
+	
+	@Test
+	void testSetRoundingThrowsException() {
+		//check for proper exception thrown
+		assertThrows(IllegalArgumentException.class,
+				() -> {calc.setRounding(java.math.RoundingMode.UNNECESSARY);});
 	}
 }
