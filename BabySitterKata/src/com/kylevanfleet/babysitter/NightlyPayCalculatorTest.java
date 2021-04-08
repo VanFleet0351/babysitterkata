@@ -177,15 +177,41 @@ class NightlyPayCalculatorTest {
 	}
 	
 	@Test
-	void testFractionalHoursRounded() {
+	void testFractionalHoursRoundedHalfUP() {
 		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
 		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
 		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
 		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
 		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
 		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
-		calc.setRounding(java.math.RoundingMode.UP);
+		calc.setRounding(java.math.RoundingMode.HALF_UP);
 		
-		assertEquals(152.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+		assertEquals(140.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
+	
+	@Test
+	void testFractionalHoursRoundedHalfDown() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.HALF_DOWN);
+		
+		assertEquals(132.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
+	
+	@Test
+	void testFractionalHoursRoundedHalfEven() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.HALF_EVEN);
+		
+		assertEquals(140.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
 	}
 }

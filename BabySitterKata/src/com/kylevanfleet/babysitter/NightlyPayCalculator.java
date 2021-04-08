@@ -58,10 +58,10 @@ public class NightlyPayCalculator {
 		LocalDateTime midnight = getMidnightDateTime(start);
 		LocalDateTime[] times = {start, bedTime, midnight, end};
 		Arrays.sort(times);
+		
 		int i = 0;
 		LocalDateTime currentTime = start, nextTime = times[i];
-		double currentRate = preBedRate;
-		double total = 0f;
+		double currentRate = preBedRate, total = 0f;
 		
 		while(currentTime.isBefore(end) && i < 4) {
 			nextTime = times[++i];
@@ -69,6 +69,7 @@ public class NightlyPayCalculator {
 			if(currentTime.isAfter(midnight) || currentTime.isEqual(midnight)) currentRate = postMidnightRate;
 			
 			total += calculateSubTotalDue(currentTime, nextTime, currentRate);
+			
 			if(currentTime.isBefore(nextTime)) currentTime = nextTime;
 		}
 		
@@ -89,12 +90,20 @@ public class NightlyPayCalculator {
 		return LocalDateTime.of(midnightDate, MIDNIGHT_TIME);
 	}
 	
+	/**
+	 * Calculate the payment due after completion of a babysitting sub-session.
+	 * 
+	 * @param start The start time and date of the babysitting sub-session.
+	 * @param end	The end time and date of the babysitting sub-session.
+	 * @param rate The hourly rate for this babysitting sub-session.
+	 * @return The dollar amount due after this babysitting sub-session.
+	 */
 	protected double calculateSubTotalDue(LocalDateTime start, LocalDateTime end, double rate) {
 		long hours = start.until(end, ChronoUnit.HOURS);
 		LocalDateTime tempStart = start.plusHours(hours);
 		long minutes = tempStart.until(end, ChronoUnit.MINUTES);
-		BigDecimal fractionalHour = new BigDecimal(minutes/ 60.0);
-		hours += fractionalHour.setScale(0, getRounding()).longValue();
+		BigDecimal fractionalHours = new BigDecimal(hours + (minutes/ 60.0));
+		hours = fractionalHours.setScale(0, rounding).longValue(); 
 		
 		if(hours < 0) hours = 0;
 		
