@@ -14,9 +14,11 @@ class NightlyPayCalculatorTest {
 	
 	//Error used for test dollar value returned
 	public final double EPSILON = 0.01;
+	//used for set up of date times in test cases
 	public final LocalDate CURRENT_DATE = LocalDate.now();
 	public final LocalDate TOMORROWS_DATE = LocalDate.now().plusDays(1);
 	public final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("hh:mma");
+	//instance of class being tested
 	public NightlyPayCalculator calc = new NightlyPayCalculator();
 
 	@Test
