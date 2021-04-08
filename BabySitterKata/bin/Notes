@@ -26,6 +26,7 @@ be sure to test for:
 2. Start time is after midnight.
 3. Bed time is after midnight.
 4. fractional hours
+...
 
 How to deal with fractional hours?
 
