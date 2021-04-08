@@ -150,5 +150,42 @@ class NightlyPayCalculatorTest {
 		assertEquals(8.00 * 4 + 16.00 * 4, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
 	}
 	
+	@Test
+	void testFractionalHoursRoundedDown() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.DOWN);
+		
+		assertEquals(116.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
 	
+	@Test
+	void testFractionalHoursRoundedUp() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.UP);
+		
+		assertEquals(152.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
+	
+	@Test
+	void testFractionalHoursRounded() {
+		LocalTime startTime = LocalTime.parse("05:20PM", DATE_FORMAT);
+		LocalDateTime startDateTime = LocalDateTime.of(CURRENT_DATE, startTime);
+		LocalTime bedTime = LocalTime.parse("10:30PM", DATE_FORMAT);
+		LocalDateTime bedDateTime = LocalDateTime.of(CURRENT_DATE, bedTime);
+		LocalTime endTime = LocalTime.parse("03:45AM", DATE_FORMAT);
+		LocalDateTime endDateTime = LocalDateTime.of(TOMORROWS_DATE, endTime);
+		calc.setRounding(java.math.RoundingMode.UP);
+		
+		assertEquals(152.00, calc.calculateGrandTotalDue(startDateTime, bedDateTime, endDateTime), EPSILON);
+	}
 }

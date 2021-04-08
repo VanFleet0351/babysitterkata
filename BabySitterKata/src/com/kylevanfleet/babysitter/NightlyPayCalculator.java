@@ -1,5 +1,7 @@
 package com.kylevanfleet.babysitter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,10 +11,16 @@ import java.util.Arrays;
 
 public class NightlyPayCalculator {
 	
+	//Hourly babysitting rates
 	private double preBedRate = 12.00;
 	private double bedToMidnightRate = 8.00;
 	private double postMidnightRate = 16.00;
 	
+	//The manner in which fraction hours are handled
+	private RoundingMode rounding = RoundingMode.DOWN;
+	
+
+	//Non-dated midnight
 	private final static LocalTime MIDNIGHT_TIME = LocalTime.parse("12:00AM", DateTimeFormatter.ofPattern("hh:mma"));
 	
 	/**
@@ -83,6 +91,10 @@ public class NightlyPayCalculator {
 	
 	protected double calculateSubTotalDue(LocalDateTime start, LocalDateTime end, double rate) {
 		long hours = start.until(end, ChronoUnit.HOURS);
+		LocalDateTime tempStart = start.plusHours(hours);
+		long minutes = tempStart.until(end, ChronoUnit.MINUTES);
+		BigDecimal fractionalHour = new BigDecimal(minutes/ 60.0);
+		hours += fractionalHour.setScale(0, getRounding()).longValue();
 		
 		if(hours < 0) hours = 0;
 		
@@ -132,4 +144,17 @@ public class NightlyPayCalculator {
 		this.postMidnightRate = postMidnightRate;
 	}
 	
+	/**
+	 * @return the rounding
+	 */
+	public RoundingMode getRounding() {
+		return rounding;
+	}
+
+	/**
+	 * @param rounding the rounding to set
+	 */
+	public void setRounding(RoundingMode rounding) {
+		this.rounding = rounding;
+	}
 }
