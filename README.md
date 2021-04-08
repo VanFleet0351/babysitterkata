@@ -33,3 +33,5 @@ NightlyPayCalculator or individually via mutator methods. Since the babysitter g
 he/she has the ability to change how the minutes are rounded via the setRounding method. NightlyPayCalculator
 supports all forms of rounding from java.math.RoundingMode except the UNNECESSARY RoundingMode. The default 
 rounding is set to DOWN.
+
+The java files are located in the file path babysitterkata/BabySitterKata/src/com/kylevanfleet/babysitter/...
